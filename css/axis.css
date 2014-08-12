@@ -1,0 +1,20 @@
+/**
+ *  Axis CSS
+ *  This is mainly to add the chart icon to the toolbar.
+ */
+
+.mce-i-dashicons-chart-area:before {
+  font-family: "dashicons";
+  content: "\f239";
+}
+
+i.mce-i-icon {
+	font: 400 20px/1 dashicons;
+	padding: 0;
+	vertical-align: top;
+	speak: none;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	margin-left: -2px;
+	padding-right: 2px
+}

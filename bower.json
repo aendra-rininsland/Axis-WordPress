@@ -1,0 +1,19 @@
+{
+  "name": "AxisWP",
+  "version": "0.0.0",
+  "authors": [
+    "Ændrew Rininsland <aendrew.rininsland@the-times.co.uk>"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "tinymce": "~4.1.1",
+    "axisJS": "~0.1.0"
+  }
+}
