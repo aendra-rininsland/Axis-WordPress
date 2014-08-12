@@ -14,6 +14,6 @@
   ],
   "dependencies": {
     "tinymce": "~4.1.1",
-    "axisJS": "~0.1.0"
+    "axisjs": "~0.1.0"
   }
 }
