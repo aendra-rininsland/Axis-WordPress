@@ -42,7 +42,7 @@ tinymce.PluginManager.add('Axis', function(editor, url) {
         ]
       },
       {
-        axisJS: img.dataset.axisJS
+        axisJS: img.dataset.axisjs
       }
     );
   }
