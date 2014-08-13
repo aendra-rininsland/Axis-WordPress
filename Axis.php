@@ -9,6 +9,7 @@ Author URI: http://www.aendrew.com
 Plugin URI: http://www.thetimes.co.uk
 Text Domain: axiswp
 Domain Path: /languages
+License: MIT
 */
 
 register_activation_hook(__FILE__, array( 'AxisWP', 'on_activation'));
