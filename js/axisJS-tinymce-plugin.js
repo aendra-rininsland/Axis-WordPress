@@ -1,8 +1,9 @@
+/*global tinymce, axisWP*/
 /**
  *  AxisJS TinyMCE plugin
  */
 
-tinymce.PluginManager.add('Axis', function(editor, url) {
+tinymce.PluginManager.add('Axis', function(editor) {
   var toolbarActive = false;
 
   // Add a button that opens a window
