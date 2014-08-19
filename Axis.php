@@ -44,7 +44,6 @@ class AxisWP {
 	 */
 	public static function register_tinymce_javascript( $plugin_array ) {
 		$plugin_array['Axis'] = plugins_url( '/js/axisJS-tinymce-plugin.js', __file__ );
-		$plugin_array['noneditable'] = plugins_url( '/bower_components/tinymce/plugins/noneditable/plugin.js', __file__ );
 		return $plugin_array;
 	}
 
