@@ -1,5 +1,4 @@
 <?php
-defined(  'ABSPATH'  ) OR exit;
 /*
 Plugin Name: Axis
 Version: 0.1.0
@@ -11,6 +10,8 @@ Text Domain: axiswp
 Domain Path: /languages
 License: MIT
 */
+
+defined(  'ABSPATH'  ) OR exit;
 
 register_activation_hook(  __FILE__, array( 'AxisWP', 'on_activation' ) );
 register_deactivation_hook(  __FILE__, array( 'AxisWP', 'on_deactivation' ) );
