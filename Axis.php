@@ -11,11 +11,11 @@ Domain Path: /languages
 License: MIT
 */
 
-defined(  'ABSPATH'  ) OR exit;
+defined( 'ABSPATH' ) OR exit;
 
-register_activation_hook(  __FILE__, array( 'AxisWP', 'on_activation' ) );
-register_deactivation_hook(  __FILE__, array( 'AxisWP', 'on_deactivation' ) );
-register_uninstall_hook(  __FILE__, array( 'AxisWP', 'on_uninstall' ) );
+register_activation_hook( __FILE__, array( 'AxisWP', 'on_activation' ) );
+register_deactivation_hook( __FILE__, array( 'AxisWP', 'on_deactivation' ) );
+register_uninstall_hook( __FILE__, array( 'AxisWP', 'on_uninstall' ) );
 
 add_action( 'plugins_loaded', array( 'AxisWP', 'init' ) );
 
@@ -24,7 +24,7 @@ class AxisWP {
 	protected static $instance;
 
 
-	public function __construct(  ) {
+	public function __construct() {
 		add_filter( 'mce_buttons', array( 'AxisWP', 'register_buttons' ) );
 		add_filter( 'kses_allowed_protocols', array( 'AxisWP', 'allow_data_protocol' ) );
 		add_filter( 'tiny_mce_before_init', array( 'AxisWP', 'tinymce_options' ) );
@@ -54,9 +54,10 @@ class AxisWP {
 
 	public static function add_stylesheet(  ) {
 		wp_enqueue_style(  'axisWP', plugins_url( 'css/axis.css',__file__ ), array(  'dashicons'  ), '1.0'  );
-		$params = [
-				'axisJSPath' => plugins_url( 'bower_components/axisJS/dist/index.html', __file__ )
-		];
+		$params = array(
+			'axisJSPath' => plugins_url( 'bower_components/axisJS/dist/index.html', __file__ )
+		);
+
 
 		wp_localize_script( 'jquery', 'axisWP', $params ); // Hooking to jQuery just 'cause.
 	}
