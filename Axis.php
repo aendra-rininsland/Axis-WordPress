@@ -19,7 +19,6 @@ register_uninstall_hook( __FILE__, array( 'AxisWP', 'on_uninstall' ) );
 
 add_action( 'plugins_loaded', array( 'AxisWP', 'init' ) );
 
-
 class AxisWP {
 	protected static $instance;
 
