@@ -52,8 +52,8 @@ class AxisWP {
 	 * Enqueues the icon stylesheet.
 	 */
 
-	public static function add_stylesheet(  ) {
-		wp_enqueue_style(  'axisWP', plugins_url( 'css/axis.css',__file__ ), array(  'dashicons'  ), '1.0'  );
+	public static function add_stylesheet() {
+		wp_enqueue_style( 'axisWP', plugins_url( 'css/axis.css', __file__ ), array( 'dashicons' ), '1.0' );
 		$params = array(
 			'axisJSPath' => plugins_url( 'bower_components/axisJS/dist/index.html', __file__ )
 		);
@@ -69,7 +69,7 @@ class AxisWP {
 	 * @return $init the changed assoc. array
 	 */
 
-	public static function tinymce_options(  $init  ) {
+	public static function tinymce_options( $init ) {
 		// Command separated string of extended elements
 		$ext = '*[*]';
 
@@ -89,7 +89,7 @@ class AxisWP {
 	/**
 	 * Enables saving the charts as data-URI PNGs.
 	 */
-	public static function allow_data_protocol(  $protocols  ){
+	public static function allow_data_protocol( $protocols ){
 		$protocols[] = 'data';
 		return $protocols;
 	}
@@ -97,25 +97,25 @@ class AxisWP {
 	// Installation/Deactivation/Uninstallation
 	// Based on: http://wordpress.stackexchange.com/a/25979/1682
 
-	public static function init(  ) {
-		is_null(  self::$instance  ) AND self::$instance = new self;
+	public static function init() {
+		is_null( self::$instance ) AND self::$instance = new self;
 		return self::$instance;
 	}
 
-	public static function on_activation(  ) {
+	public static function on_activation() {
 		if ( ! current_user_can(  'activate_plugins' ) ) {
 			return;
 		}
 
 		$plugin_req = $_REQUEST['plugin'];
 		$plugin = isset( $plugin_req ) ? $plugin_req : '';
-		check_admin_referer(  "activate-plugin_{$plugin}"  );
+		check_admin_referer( "activate-plugin_{$plugin}" );
 
 		# Uncomment the following line to see the function in action
 		# exit(  var_dump(  $_GET  )  );
 	}
 
-	public static function on_deactivation(  ) {
+	public static function on_deactivation() {
 		if ( ! current_user_can( 'activate_plugins' ) ) {
 			return;
 		}
@@ -127,10 +127,10 @@ class AxisWP {
 		# exit(  var_dump(  $_GET  )  );
 	}
 
-	public static function on_uninstall(  ) {
+	public static function on_uninstall() {
 			if ( ! current_user_can(  'activate_plugins' ) )
 					return;
-			check_admin_referer(  'bulk-plugins'  );
+			check_admin_referer( 'bulk-plugins' );
 
 			// Important: Check if the file is the one
 			// that was registered during the uninstall hook.

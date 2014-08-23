@@ -14,6 +14,15 @@ A plugin for creating fancy D3-based interactive charts in WordPress.
 Axis is a plugin for creating fancy D3-based charts in WordPress, using [axisJS](http://github.com/times/axisJS),
 an Angular-based framework for streamlined chart creation.
 
+It is based off [Quartz Chartbuilder](http://www.github.com/Quartz/Chartbuilder) and created by
+[Times Digital Development](http://timesdigitaldevelopment.tumblr.com). Please note that this
+is a work in progress and currently under active development.
+
+**Note:** We do *not* check the WordPress support forums. Please direct any support
+queries to the [GitHub issue queue](https://github.com/times/Axis/issues).
+The actual chart creation panel is a separate project called [axisJS](http://github.com/times/axisJS).
+For anything regarding that, please use its own, separate [issue queue](http://github.com/times/axisJS/issues).
+
 == Installation ==
 
 1. Unzip and upload the `Axis` directory to `/wp-content/plugins/`.
@@ -37,5 +46,5 @@ as is the interface layout.
 
 == Roadmap ==
 
-* Create a filter so charts on front-end are interactive.
+* Make chart output interactive
 * Add PHPUnit tests.
