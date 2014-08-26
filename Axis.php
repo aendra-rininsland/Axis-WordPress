@@ -54,7 +54,7 @@ class AxisWP {
 	public static function add_stylesheet() {
 		wp_enqueue_style( 'axisWP', plugins_url( 'css/axis.css', __file__ ), array( 'dashicons' ), '1.0' );
 		$params = array(
-			'axisJSPath' => plugins_url( 'bower_components/axisJS/dist/index.html', __file__ )
+			'axisJSPath' => plugins_url( 'bower_components/axisjs/dist/index.html', __file__ )
 		);
 
 
