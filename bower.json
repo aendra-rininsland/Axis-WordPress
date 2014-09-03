@@ -13,7 +13,7 @@
     "tests"
   ],
   "dependencies": {
-    "axisjs": "~0.1.0",
+    "axisjs": "~0.1.1",
     "c3": "~0.3.0"
   }
 }

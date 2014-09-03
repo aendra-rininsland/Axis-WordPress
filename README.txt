@@ -3,7 +3,7 @@ Contributors: aendrew
 Tags: charts, graphs, data
 Requires at least: 3.0.1
 Tested up to: 3.4
-Stable tag: 0.1.0
+Stable tag: 0.1.1
 License: MIT
 License URI: http://opensource.org/licenses/MIT
 
@@ -40,6 +40,9 @@ as is the interface layout.
 == Screenshots ==
 
 == Changelog ==
+
+= 0.1.1 =
+* Bugfix release. Adds interactive charts to frontend.
 
 = 0.1.0 =
 * Initial release.
