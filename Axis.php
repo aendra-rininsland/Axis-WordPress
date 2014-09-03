@@ -22,14 +22,58 @@ add_action( 'plugins_loaded', array( 'AxisWP', 'init' ) );
 class AxisWP {
 	protected static $instance;
 
-
 	public function __construct() {
+		// Backend stuff
 		add_filter( 'mce_buttons', array( 'AxisWP', 'register_buttons' ) );
 		add_filter( 'kses_allowed_protocols', array( 'AxisWP', 'allow_data_protocol' ) );
 		add_filter( 'tiny_mce_before_init', array( 'AxisWP', 'tinymce_options' ) );
 		add_filter( 'mce_external_plugins', array( 'AxisWP', 'register_tinymce_javascript' ) );
-		add_action( 'admin_enqueue_scripts', array( 'AxisWP', 'add_stylesheet' ) );
+		add_action( 'admin_enqueue_scripts', array( 'AxisWP', 'add_admin_stylesheet' ) );
+
+		// Frontend stuff
+		add_filter( 'the_content', array( 'AxisWP', 'convert_png_to_interactive' ) );
+		add_action( 'wp_enqueue_scripts', array( 'AxisWP', 'add_frontend_js' ) );
 	}
+
+	// Client-side (frontend) stuff
+
+	/**
+	 * Replaces the data-uri PNGs in the backend with a div.
+	 */
+	public static function convert_png_to_interactive( $content ) {
+		$dom = new DOMDocument;
+		$dom->loadHTML( $content );
+		$xpath = new DOMXPath( $dom );
+		$charts = $xpath->query( "//*[contains(@class, 'axisChart')]" );
+
+		foreach ( $charts as $chart ){
+			$chartConfig = $chart->getAttribute( 'data-axisjs' );
+			$div = $dom->createElement( 'div' );
+			$div->setAttribute( 'data-axisjs', $chartConfig );
+			$div->setAttribute( 'class', 'axisChart' );
+			$chart->parentNode->replaceChild( $div, $chart );
+		}
+
+		$content = $dom->saveHTML();
+
+		return $content;
+	}
+
+	/**
+	 *  Adds frontend JavaScript to the page.
+	 */
+
+	public static function add_frontend_js() {
+		if ( ! is_admin() ) {
+			wp_enqueue_script( 'd3js', plugins_url( 'bower_components/d3/d3.min.js', __file__ ), array( 'jquery' ), '3.4.11', true );
+			wp_enqueue_script( 'c3js', plugins_url( 'bower_components/c3/c3.min.js', __file__ ), array( 'jquery', 'd3js' ), '0.3.0', true );
+			wp_enqueue_script( 'axis', plugins_url( 'js/axis.js', __file__ ), array( 'jquery', 'c3js', 'd3js' ), '0.1.0', true );
+			wp_enqueue_style( 'c3jsCSS', plugins_url( 'bower_components/c3/c3.css', __file__ ) );
+		}
+	}
+
+
+	// Admin-side stuff
 
 	/**
 	 * Adds the AxisWP button to TinyMCE.
@@ -51,7 +95,7 @@ class AxisWP {
 	 * Enqueues the icon stylesheet.
 	 */
 
-	public static function add_stylesheet() {
+	public static function add_admin_stylesheet() {
 		wp_enqueue_style( 'axisWP', plugins_url( 'css/axis.css', __file__ ), array( 'dashicons' ), '1.0' );
 		$params = array(
 			'axisJSPath' => plugins_url( 'bower_components/axisjs/dist/index.html', __file__ )
