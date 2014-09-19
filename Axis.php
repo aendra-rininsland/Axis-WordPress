@@ -53,6 +53,13 @@ class AxisWP {
 			$div->setAttribute( 'class', 'axisChart' );
 			$chart->parentNode->replaceChild( $div, $chart );
 		}
+		
+		// via: http://stackoverflow.com/a/5172548/467760
+		// loadHTML causes a !DOCTYPE tag to be added, so remove it:
+		$dom->removeChild($dom->firstChild);
+		
+		// it also wraps the code in <html><body></body></html>, so remove that:
+		$dom->replaceChild($dom->firstChild->firstChild->firstChild, $dom->firstChild);
 
 		$content = $dom->saveHTML();
 
