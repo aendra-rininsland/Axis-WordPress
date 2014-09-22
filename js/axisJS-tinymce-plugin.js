@@ -76,15 +76,18 @@ tinymce.PluginManager.add('Axis', function(editor) {
   }
 
   function addToolbar( node ) {
-    var rectangle, toolbarHtml, toolbar, left,
-      dom = editor.dom;
-
-    removeToolbar();
+    var rectangle,
+        toolbarHtml,
+        toolbar,
+        left,
+        dom = editor.dom;
 
     // Don't add to placeholders
-    if ( ! node || node.nodeName !== 'IMG' || isPlaceholder( node ) ) {
+    if ( ! node || !dom.hasClass(node, 'axisChart') || isPlaceholder( node ) ) {
       return;
     }
+
+    removeToolbar();
 
     dom.setAttrib( node, 'data-wp-chartselect', 1 );
     rectangle = dom.getRect( node );
