@@ -1,7 +1,7 @@
 {
   "name": "axisJS",
   "description": "Modular, Angular-based framework for creating basic charts",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "main": [
     "app/scripts/app.js"
   ],
@@ -51,13 +51,13 @@
     "angular-scenario": "~1.3"
   },
   "appPath": "app",
-  "_release": "0.1.1",
+  "_release": "0.1.2",
   "_resolution": {
     "type": "version",
-    "tag": "0.1.1",
-    "commit": "dfee2e65f5aaf86786f6f0839979a6318e8542b8"
+    "tag": "0.1.2",
+    "commit": "db26e632e2bf877a4b8721bb2852d309e24b6721"
   },
   "_source": "git://github.com/times/axisJS.git",
-  "_target": "~0.1.1",
+  "_target": "~0.1.2",
   "_originalSource": "axisjs"
 }

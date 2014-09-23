@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: Axis
-Version: 0.1.1
+Version: 0.1.2
 Description: Plugin for adding charts to WordPress posts
 Author: Ændrew Rininsland
 Author URI: http://www.aendrew.com
@@ -56,10 +56,10 @@ class AxisWP {
 
 		// via: http://stackoverflow.com/a/5172548/467760
 		// loadHTML causes a !DOCTYPE tag to be added, so remove it:
-		$dom->removeChild($dom->firstChild);
+		$dom->removeChild( $dom->firstChild );
 
 		// it also wraps the code in <html><body></body></html>, so remove that:
-		$dom->replaceChild($dom->firstChild->firstChild->firstChild, $dom->firstChild);
+		$dom->replaceChild( $dom->firstChild->firstChild->firstChild, $dom->firstChild );
 
 		$content = $dom->saveHTML();
 
