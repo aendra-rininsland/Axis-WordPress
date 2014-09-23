@@ -53,11 +53,11 @@ class AxisWP {
 			$div->setAttribute( 'class', 'axisChart' );
 			$chart->parentNode->replaceChild( $div, $chart );
 		}
-		
+
 		// via: http://stackoverflow.com/a/5172548/467760
 		// loadHTML causes a !DOCTYPE tag to be added, so remove it:
 		$dom->removeChild($dom->firstChild);
-		
+
 		// it also wraps the code in <html><body></body></html>, so remove that:
 		$dom->replaceChild($dom->firstChild->firstChild->firstChild, $dom->firstChild);
 
@@ -94,7 +94,13 @@ class AxisWP {
 	 * Registers the TinyMCE plugin.
 	 */
 	public static function register_tinymce_javascript( $plugin_array ) {
-		$plugin_array['Axis'] = plugins_url( '/js/axisJS-tinymce-plugin.js', __file__ );
+		global $wp_version;
+		if ( explode( '.', $wp_version )[0] > 3 ) {
+			$plugin_array['Axis'] = plugins_url( '/js/axisJS-tinymce-plugin-wp-4x.js', __file__ );
+		} else {
+			$plugin_array['Axis'] = plugins_url( '/js/axisJS-tinymce-plugin.js', __file__ );
+		}
+
 		return $plugin_array;
 	}
 
@@ -104,11 +110,10 @@ class AxisWP {
 
 	public static function add_admin_stylesheet() {
 		wp_enqueue_style( 'axisWP', plugins_url( 'css/axis.css', __file__ ), array( 'dashicons' ), '1.0' );
+
 		$params = array(
-			'axisJSPath' => plugins_url( 'bower_components/axisjs/dist/index.html', __file__ )
+			'axisJSPath' => plugins_url( 'bower_components/axisjs/dist/index.html', __file__ ),
 		);
-
-
 		wp_localize_script( 'jquery', 'axisWP', $params ); // Hooking to jQuery just 'cause.
 	}
 
