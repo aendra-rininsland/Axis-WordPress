@@ -55,7 +55,7 @@
   "_resolution": {
     "type": "version",
     "tag": "0.1.2",
-    "commit": "db26e632e2bf877a4b8721bb2852d309e24b6721"
+    "commit": "a07c9f6c4f61a1667ed42efb906c196b75d4d393"
   },
   "_source": "git://github.com/times/axisJS.git",
   "_target": "~0.1.2",
