@@ -1,0 +1,5 @@
+{
+  "require-dev": {
+    "whatthejeff/nyancat-phpunit-resultprinter": "~1.2"
+  }
+}

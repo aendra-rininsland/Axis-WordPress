@@ -24,6 +24,7 @@ class AxisWP {
 
 	public function __construct() {
 		// Backend stuff
+		// @TODO This probably needs an is_admin()...
 		add_filter( 'mce_buttons', array( 'AxisWP', 'register_buttons' ) );
 		add_filter( 'kses_allowed_protocols', array( 'AxisWP', 'allow_data_protocol' ) );
 		add_filter( 'tiny_mce_before_init', array( 'AxisWP', 'tinymce_options' ) );
