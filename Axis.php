@@ -96,7 +96,10 @@ class AxisWP {
 	 */
 	public static function register_tinymce_javascript( $plugin_array ) {
 		global $wp_version;
-		if ( explode( '.', $wp_version )[0] > 3 ) {
+		$exploded_version = explode( '.', $wp_version );
+		$major_version = $exploded_version[0];
+		
+		if ( $major_version > 3 ) {
 			$plugin_array['Axis'] = plugins_url( '/js/axisJS-tinymce-plugin-wp-4x.js', __file__ );
 		} else {
 			$plugin_array['Axis'] = plugins_url( '/js/axisJS-tinymce-plugin.js', __file__ );

@@ -79,13 +79,17 @@ class AxisBackendTest extends WP_UnitTestCase {
 	*/
 	function test_ensure_axis_enqueues_correct_tinymce_plugin() {
 		// Arrange
+		global $wp_version;
+		$exploded_version = explode('.', $wp_version);
+		$major_version = $exploded_version[0];
+
 		// Act
 		$plugins = apply_filters( 'mce_external_plugins', array() );
 		$tinymce_plugin = $plugins['Axis'];
-		global $wp_version;
+
 
 		// Assert
-		if (explode('.', $wp_version)[0] == '4') {
+		if ( $major_version == '4') {
 			$this->assertRegExp( '/axisJS-tinymce-plugin-wp-4x\.js/', $tinymce_plugin );
 		} else {
 			$this->assertRegExp( '/axisJS-tinymce-plugin\.js/', $tinymce_plugin );
