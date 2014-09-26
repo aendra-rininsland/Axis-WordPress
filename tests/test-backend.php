@@ -71,6 +71,26 @@ class AxisBackendTest extends WP_UnitTestCase {
 		$this->assertStringStartsWith( 'data:image/png;base64,', $result );
 	}
 
+	// Tests to prevent regressive bugs
+
+	/**
+	* Ensure Axis enqueues the proper version of axisJS-tiny-mce-plugin.js
+	* @see https://github.com/times/Axis/issues/7
+	*/
+	function test_ensure_axis_enqueues_correct_tinymce_plugin() {
+		// Arrange
+		// Act
+		$plugins = apply_filters( 'mce_external_plugins', array() );
+		$tinymce_plugin = $plugins['Axis'];
+		global $wp_version;
+
+		// Assert
+		if (explode('.', $wp_version)[0] == '4') {
+			$this->assertRegExp( '/axisJS-tinymce-plugin-wp-4x\.js/', $tinymce_plugin );
+		} else {
+			$this->assertRegExp( '/axisJS-tinymce-plugin\.js/', $tinymce_plugin );
+		}
+	}
 
 	public function setUp() {
 			parent::setUp();
