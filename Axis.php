@@ -43,7 +43,9 @@ class AxisWP {
 	 */
 	public static function convert_png_to_interactive( $content ) {
 		$dom = new DOMDocument;
-		$dom->loadHTML( $content );
+
+		// Via: http://stackoverflow.com/a/22490902/467760 (may not work on older PHP)
+		$dom->loadHTML( $content, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD );
 		$xpath = new DOMXPath( $dom );
 		$charts = $xpath->query( "//*[contains(@class, 'axisChart')]" );
 
@@ -54,13 +56,6 @@ class AxisWP {
 			$div->setAttribute( 'class', 'axisChart' );
 			$chart->parentNode->replaceChild( $div, $chart );
 		}
-
-		// via: http://stackoverflow.com/a/5172548/467760
-		// loadHTML causes a !DOCTYPE tag to be added, so remove it:
-		$dom->removeChild( $dom->firstChild );
-
-		// it also wraps the code in <html><body></body></html>, so remove that:
-		$dom->replaceChild( $dom->firstChild->firstChild->firstChild, $dom->firstChild );
 
 		$content = $dom->saveHTML();
 
@@ -98,7 +93,7 @@ class AxisWP {
 		global $wp_version;
 		$exploded_version = explode( '.', $wp_version );
 		$major_version = $exploded_version[0];
-		
+
 		if ( $major_version > 3 ) {
 			$plugin_array['Axis'] = plugins_url( '/js/axisJS-tinymce-plugin-wp-4x.js', __file__ );
 		} else {
