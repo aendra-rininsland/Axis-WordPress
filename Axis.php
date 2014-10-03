@@ -62,7 +62,7 @@ class AxisWP {
 			$div->setAttribute( 'class', 'axisChart' );
 			$chart->parentNode->replaceChild( $div, $chart );
 		}
-		phpinfo();
+
 		if ($phpversion[1] <= 3) { // Via: http://stackoverflow.com/a/10657666/467760
 			// Remove doctype node
 			$doc->doctype->parentNode->removeChild($doc->doctype);
