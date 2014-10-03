@@ -44,8 +44,14 @@ class AxisWP {
 	public static function convert_png_to_interactive( $content ) {
 		$dom = new DOMDocument;
 
-		// Via: http://stackoverflow.com/a/22490902/467760 (may not work on older PHP)
-		$dom->loadHTML( $content, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD );
+		$phpversion = explode('.', phpversion());
+		if ($phpversion[1] <= 3) {
+			$dom->loadHTML( $content );
+		} else {
+			// Via: http://stackoverflow.com/a/22490902/467760 (may not work on older PHP)
+			$dom->loadHTML( $content, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD );
+		}
+
 		$xpath = new DOMXPath( $dom );
 		$charts = $xpath->query( "//*[contains(@class, 'axisChart')]" );
 
@@ -57,6 +63,12 @@ class AxisWP {
 			$chart->parentNode->replaceChild( $div, $chart );
 		}
 
+		if ($phpversion[1] <= 3) { // Via: http://stackoverflow.com/a/6953808/467760
+			# remove <!DOCTYPE
+			$doc->removeChild($doc->firstChild);
+			# remove <html><body></body></html>
+			$doc->replaceChild($doc->firstChild->firstChild->firstChild, $doc->firstChild);
+		}
 		$content = $dom->saveHTML();
 
 		return $content;
