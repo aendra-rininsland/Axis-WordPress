@@ -65,9 +65,9 @@ class AxisWP {
 
 		if ($phpversion[1] <= 3) { // Via: http://stackoverflow.com/a/6953808/467760
 			# remove <!DOCTYPE
-			$doc->removeChild($doc->firstChild);
+			$dom->removeChild($dom->firstChild);
 			# remove <html><body></body></html>
-			$doc->replaceChild($doc->firstChild->firstChild->firstChild, $doc->firstChild);
+			$dom->replaceChild($dom->firstChild->firstChild->firstChild, $dom->firstChild);
 		}
 		$content = $dom->saveHTML();
 
