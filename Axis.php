@@ -42,34 +42,48 @@ class AxisWP {
 	 * Replaces the data-uri PNGs in the backend with a div.
 	 */
 	public static function convert_png_to_interactive( $content ) {
-		$dom = new DOMDocument;
+		$doc = new DOMDocument;
 
 		$phpversion = explode('.', phpversion());
 		if ($phpversion[1] <= 3) {
-			$dom->loadHTML( $content );
+			$doc->loadHTML( $content );
 		} else {
 			// Via: http://stackoverflow.com/a/22490902/467760 (may not work on older PHP)
-			$dom->loadHTML( $content, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD );
+			$doc->loadHTML( $content, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD );
 		}
 
-		$xpath = new DOMXPath( $dom );
+		$xpath = new DOMXPath( $doc );
 		$charts = $xpath->query( "//*[contains(@class, 'axisChart')]" );
 
 		foreach ( $charts as $chart ){
 			$chartConfig = $chart->getAttribute( 'data-axisjs' );
-			$div = $dom->createElement( 'div' );
+			$div = $doc->createElement( 'div' );
 			$div->setAttribute( 'data-axisjs', $chartConfig );
 			$div->setAttribute( 'class', 'axisChart' );
 			$chart->parentNode->replaceChild( $div, $chart );
 		}
+		phpinfo();
+		if ($phpversion[1] <= 3) { // Via: http://stackoverflow.com/a/10657666/467760
+			// Remove doctype node
+			$doc->doctype->parentNode->removeChild($doc->doctype);
 
-		if ($phpversion[1] <= 3) { // Via: http://stackoverflow.com/a/6953808/467760
-			# remove <!DOCTYPE
-			$dom->removeChild($dom->firstChild);
-			# remove <html><body></body></html>
-			$dom->replaceChild($dom->firstChild->firstChild->firstChild, $dom->firstChild);
+			// Remove html element, preserving child nodes
+			$html = $doc->getElementsByTagName("html")->item(0);
+			$fragment = $doc->createDocumentFragment();
+			while ($html->childNodes->length > 0) {
+			    $fragment->appendChild($html->childNodes->item(0));
+			}
+			$html->parentNode->replaceChild($fragment, $html);
+
+			// Remove body element, preserving child nodes
+			$body = $doc->getElementsByTagName("body")->item(0);
+			$fragment = $doc->createDocumentFragment();
+			while ($body->childNodes->length > 0) {
+			    $fragment->appendChild($body->childNodes->item(0));
+			}
+			$body->parentNode->replaceChild($fragment, $body);
 		}
-		$content = $dom->saveHTML();
+		$content = $doc->saveHTML();
 
 		return $content;
 	}
