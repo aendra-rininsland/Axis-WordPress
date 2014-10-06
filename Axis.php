@@ -42,10 +42,12 @@ class AxisWP {
 	 * Replaces the data-uri PNGs in the backend with a div.
 	 */
 	public static function convert_png_to_interactive( $content ) {
-		$doc = new DOMDocument;
+		$doc = new DOMDocument( '1.0', 'utf-8' );
 
-		$phpversion = explode('.', phpversion());
-		if ($phpversion[1] <= 3) {
+		$phpversion = explode( '.', phpversion() );
+		$content = mb_convert_encoding( $content, 'HTML-ENTITIES', 'UTF-8' ); // Oh FFS http://stackoverflow.com/a/8218649/467760
+		
+		if ( $phpversion[1] <= 3 ) {
 			$doc->loadHTML( $content );
 		} else {
 			// Via: http://stackoverflow.com/a/22490902/467760 (may not work on older PHP)
@@ -63,25 +65,25 @@ class AxisWP {
 			$chart->parentNode->replaceChild( $div, $chart );
 		}
 
-		if ($phpversion[1] <= 3) { // Via: http://stackoverflow.com/a/10657666/467760
+		if ( $phpversion[1] <= 3 ) { // Via: http://stackoverflow.com/a/10657666/467760
 			// Remove doctype node
-			$doc->doctype->parentNode->removeChild($doc->doctype);
+			$doc->doctype->parentNode->removeChild( $doc->doctype );
 
 			// Remove html element, preserving child nodes
-			$html = $doc->getElementsByTagName("html")->item(0);
+			$html = $doc->getElementsByTagName( 'html' )->item( 0 );
 			$fragment = $doc->createDocumentFragment();
-			while ($html->childNodes->length > 0) {
-			    $fragment->appendChild($html->childNodes->item(0));
+			while ( $html->childNodes->length > 0 ) {
+				$fragment->appendChild( $html->childNodes->item( 0 ) );
 			}
-			$html->parentNode->replaceChild($fragment, $html);
+			$html->parentNode->replaceChild( $fragment, $html );
 
 			// Remove body element, preserving child nodes
-			$body = $doc->getElementsByTagName("body")->item(0);
+			$body = $doc->getElementsByTagName( 'body' )->item( 0 );
 			$fragment = $doc->createDocumentFragment();
-			while ($body->childNodes->length > 0) {
-			    $fragment->appendChild($body->childNodes->item(0));
+			while ( $body->childNodes->length > 0 ) {
+				$fragment->appendChild( $body->childNodes->item( 0 ) );
 			}
-			$body->parentNode->replaceChild($fragment, $body);
+			$body->parentNode->replaceChild( $fragment, $body );
 		}
 		$content = $doc->saveHTML();
 
