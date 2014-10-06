@@ -24,6 +24,7 @@ class AxisWP {
 
 	public function __construct() {
 		// Backend stuff
+		// @TODO This probably needs an is_admin()...
 		add_filter( 'mce_buttons', array( 'AxisWP', 'register_buttons' ) );
 		add_filter( 'kses_allowed_protocols', array( 'AxisWP', 'allow_data_protocol' ) );
 		add_filter( 'tiny_mce_before_init', array( 'AxisWP', 'tinymce_options' ) );
@@ -41,27 +42,48 @@ class AxisWP {
 	 * Replaces the data-uri PNGs in the backend with a div.
 	 */
 	public static function convert_png_to_interactive( $content ) {
-		$dom = new DOMDocument;
-		$dom->loadHTML( $content );
-		$xpath = new DOMXPath( $dom );
+		$doc = new DOMDocument;
+
+		$phpversion = explode('.', phpversion());
+		if ($phpversion[1] <= 3) {
+			$doc->loadHTML( $content );
+		} else {
+			// Via: http://stackoverflow.com/a/22490902/467760 (may not work on older PHP)
+			$doc->loadHTML( $content, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD );
+		}
+
+		$xpath = new DOMXPath( $doc );
 		$charts = $xpath->query( "//*[contains(@class, 'axisChart')]" );
 
 		foreach ( $charts as $chart ){
 			$chartConfig = $chart->getAttribute( 'data-axisjs' );
-			$div = $dom->createElement( 'div' );
+			$div = $doc->createElement( 'div' );
 			$div->setAttribute( 'data-axisjs', $chartConfig );
 			$div->setAttribute( 'class', 'axisChart' );
 			$chart->parentNode->replaceChild( $div, $chart );
 		}
 
-		// via: http://stackoverflow.com/a/5172548/467760
-		// loadHTML causes a !DOCTYPE tag to be added, so remove it:
-		$dom->removeChild( $dom->firstChild );
+		if ($phpversion[1] <= 3) { // Via: http://stackoverflow.com/a/10657666/467760
+			// Remove doctype node
+			$doc->doctype->parentNode->removeChild($doc->doctype);
 
-		// it also wraps the code in <html><body></body></html>, so remove that:
-		$dom->replaceChild( $dom->firstChild->firstChild->firstChild, $dom->firstChild );
+			// Remove html element, preserving child nodes
+			$html = $doc->getElementsByTagName("html")->item(0);
+			$fragment = $doc->createDocumentFragment();
+			while ($html->childNodes->length > 0) {
+			    $fragment->appendChild($html->childNodes->item(0));
+			}
+			$html->parentNode->replaceChild($fragment, $html);
 
-		$content = $dom->saveHTML();
+			// Remove body element, preserving child nodes
+			$body = $doc->getElementsByTagName("body")->item(0);
+			$fragment = $doc->createDocumentFragment();
+			while ($body->childNodes->length > 0) {
+			    $fragment->appendChild($body->childNodes->item(0));
+			}
+			$body->parentNode->replaceChild($fragment, $body);
+		}
+		$content = $doc->saveHTML();
 
 		return $content;
 	}
@@ -95,7 +117,10 @@ class AxisWP {
 	 */
 	public static function register_tinymce_javascript( $plugin_array ) {
 		global $wp_version;
-		if ( explode( '.', $wp_version )[0] > 3 ) {
+		$exploded_version = explode( '.', $wp_version );
+		$major_version = $exploded_version[0];
+
+		if ( $major_version > 3 ) {
 			$plugin_array['Axis'] = plugins_url( '/js/axisJS-tinymce-plugin-wp-4x.js', __file__ );
 		} else {
 			$plugin_array['Axis'] = plugins_url( '/js/axisJS-tinymce-plugin.js', __file__ );

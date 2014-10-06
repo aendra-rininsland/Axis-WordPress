@@ -53,4 +53,4 @@ as is the interface layout.
 == Roadmap ==
 
 * Make chart output interactive
-* Add PHPUnit tests.
+* ~~Add PHPUnit tests.~~
