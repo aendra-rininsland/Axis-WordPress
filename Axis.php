@@ -22,6 +22,12 @@ add_action( 'plugins_loaded', array( 'AxisWP', 'init' ) );
 class AxisWP {
 	protected static $instance;
 
+	/**
+	 * Constructor. Mainly adds filters and actions.
+	 *
+	 * @return null
+	 */
+
 	public function __construct() {
 		// Backend stuff
 		// @TODO This probably needs an is_admin()...
@@ -30,6 +36,10 @@ class AxisWP {
 		add_filter( 'tiny_mce_before_init', array( 'AxisWP', 'tinymce_options' ) );
 		add_filter( 'mce_external_plugins', array( 'AxisWP', 'register_tinymce_javascript' ) );
 		add_action( 'admin_enqueue_scripts', array( 'AxisWP', 'add_admin_stylesheet' ) );
+		add_action( 'init' , array( 'AxisWP', 'register_chart_taxonomy' ) );
+		add_filter( 'attachment_fields_to_edit', array( 'AxisWP', 'add_chart_metadata_field' ), null, 2 );
+		add_filter( 'attachment_fields_to_save', array( 'AxisWP', 'save_chart_metadata' ), null, 2 );
+		add_action( 'wp_ajax_insert_axis_attachment', array( 'AxisWP', 'insert_axis_attachment' ) );
 
 		// Frontend stuff
 		add_filter( 'the_content', array( 'AxisWP', 'convert_png_to_interactive' ) );
@@ -40,18 +50,21 @@ class AxisWP {
 
 	/**
 	 * Replaces the data-uri PNGs in the backend with a div.
+	 * @TODO Replace DOMDocument with a better DOM parsing library.
+	 *
+	 * @param string $content
+	 * @return string $content
 	 */
 	public static function convert_png_to_interactive( $content ) {
 		$doc = new DOMDocument( '1.0', 'utf-8' );
 
 		$phpversion = explode( '.', phpversion() );
 		$content = mb_convert_encoding( $content, 'HTML-ENTITIES', 'UTF-8' ); // Oh FFS http://stackoverflow.com/a/8218649/467760
-		
+
 		if ( $phpversion[1] <= 3 ) {
 			$doc->loadHTML( $content );
 		} else {
-			// Via: http://stackoverflow.com/a/22490902/467760 (may not work on older PHP)
-			$doc->loadHTML( $content, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD );
+			$doc->loadHTML( $content, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD ); // Via: http://stackoverflow.com/a/22490902/467760 (Needs PHP >= 5.4)
 		}
 
 		$xpath = new DOMXPath( $doc );
@@ -91,7 +104,9 @@ class AxisWP {
 	}
 
 	/**
-	 *  Adds frontend JavaScript to the page.
+	 * Adds frontend JavaScript to the page.
+	 *
+	 * @return null
 	 */
 
 	public static function add_frontend_js() {
@@ -104,7 +119,125 @@ class AxisWP {
 	}
 
 
-	// Admin-side stuff
+	// Admin-side backend stuff
+
+	/**
+	 * Registers the charts taxonomy.
+	 *
+	 * @return null
+	 */
+	public static function register_chart_taxonomy() {
+		$labels = array(
+			'name'              => 'Charts',
+			'singular_name'     => 'Chart',
+			'search_items'      => 'Search Charts',
+			'all_items'         => 'All Chart Categories',
+			'parent_item'       => 'Parent Chart Category',
+			'parent_item_colon' => 'Parent Chart Category:',
+			'edit_item'         => 'Edit Chart Category',
+			'update_item'       => 'Update Chart Category',
+			'add_new_item'      => 'Add New Chart Category',
+			'new_item_name'     => 'New Chart Category Name',
+			'menu_name'         => 'Charts',
+		);
+
+		$args = array(
+			'labels' => $labels,
+			'hierarchical' => true,
+			'query_var' => 'true',
+			'rewrite' => 'true',
+			'show_admin_column' => 'true',
+		);
+
+		register_taxonomy( 'chart', 'attachment', $args );
+		if ( ! term_exists( 'default', 'chart' ) ) {
+			wp_insert_term(
+				'(default)', // the term
+				'chart', // the taxonomy
+				array(
+					'description' => 'Unsorted Axis charts',
+					'slug' => 'default',
+				)
+			);
+		}
+	}
+
+	/**
+	 * Adding custom field to the $form_fields array
+	 * @see http://code.tutsplus.com/articles/creating-custom-fields-for-attachments-in-wordpress--net-13076
+	 *
+	 * @param array $form_fields
+	 * @param object $post
+	 * @return array
+	 */
+
+	public static function add_chart_metadata_field( $form_fields, $post ) {
+		// $form_fields is a special array of fields to include in the attachment form
+		// $post is the attachment record in the database
+		//     $post->post_type == 'attachment'
+		// (attachments are treated as posts in Wordpress)
+
+		$form_fields['axisWP']['input'] = 'hidden';
+		$form_fields['axisWP']['value'] = get_post_meta( $post->ID, '_axisWP', true );
+
+		return $form_fields;
+	}
+
+	/**
+	 * Saving the custom metadata field
+	 *
+	 * @param array $post
+	 * @param array $attachment
+	 * @return array
+	 */
+	public static function save_chart_metadata( $post, $attachment ) {
+		// $attachment part of the form $_POST ($_POST[attachments][postID])
+		// $post attachments wp post array - will be saved after returned
+		//     $post['post_type'] == 'attachment'
+		if ( isset( $attachment['_axisWP'] ) && count( $post['tax_input']['chart'] ) > 1 ) {
+			// update_post_meta(postID, meta_key, meta_value);
+			update_post_meta( $post['ID'], '_axisWP', $attachment['axisWP'] );
+		}
+		return $post;
+	}
+
+	/**
+	 * AJAX callback that inserts chart as attachment into the WP database
+	 */
+	public static function insert_axis_attachment() {
+		// Get config
+		$axis_config = json_decode( $_POST['axisConfig'] );
+
+		// Begin saving PNG to filesystem
+		if ( false === ( $creds = request_filesystem_credentials( 'admin-ajax.php', '', false, false, null ) ) ) {
+			return; // stop processing here
+		}
+		if ( ! WP_Filesystem( $creds ) ) {
+			request_filesystem_credentials( 'admin-ajax.php', '', true, false, null );
+			return;
+		}
+		global $wp_filesystem;
+		$upload_dir = wp_upload_dir();
+		$chart_filename = sanitize_title_with_dashes( $axis_config->chartTitle ) . '_' . time() . '.png';
+		$filename = trailingslashit( $upload_dir['path'] ) . $chart_filename;
+		$uriPhp = 'data://' . substr( $_POST['axisChart'], 5 ); // Via http://stackoverflow.com/questions/6735414/php-data-uri-to-file/6735458#6735458
+		$binary = wpcom_vip_file_get_contents( $uriPhp );
+		$wp_filesystem->put_contents(
+			$filename,
+			$binary,
+			FS_CHMOD_FILE // predefined mode settings for WP files
+		);
+
+		// Insert or update attachment.
+		if ( ! $axis_config->ID ) {
+			$attachment = array(
+				'post_title' => $axis_config->chartTitle,
+				'post_content' => '', // Must be empty string
+				'post_status' => 'published',
+				'post_mime_type' => 'image/png',
+			);
+		}
+	}
 
 	/**
 	 * Adds the AxisWP button to TinyMCE.
