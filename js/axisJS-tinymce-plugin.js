@@ -23,6 +23,9 @@ tinymce.PluginManager.add('Axis', function(editor) {
             onclick: 'close'
           }
         ]
+      },
+      {
+        axisWP: axisWP
       });
     }
   });
@@ -43,7 +46,8 @@ tinymce.PluginManager.add('Axis', function(editor) {
         ]
       },
       {
-        axisJS: img.dataset.axisjs
+        axisJS: img.dataset.axisjs,
+        axisWP: axisWP
       }
     );
   }

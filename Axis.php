@@ -39,11 +39,12 @@ class AxisWP {
 		add_action( 'init' , array( 'AxisWP', 'register_chart_taxonomy' ) );
 		add_filter( 'attachment_fields_to_edit', array( 'AxisWP', 'add_chart_metadata_field' ), null, 2 );
 		add_filter( 'attachment_fields_to_save', array( 'AxisWP', 'save_chart_metadata' ), null, 2 );
-		add_action( 'wp_ajax_insert_axis_attachment', array( 'AxisWP', 'insert_axis_attachment' ) );
+		add_action( 'wp_ajax_insert_axis_attachment', array( 'AxisWP', 'insert_axis_attachment_callback' ) );
 
 		// Frontend stuff
 		add_filter( 'the_content', array( 'AxisWP', 'convert_png_to_interactive' ) );
 		add_action( 'wp_enqueue_scripts', array( 'AxisWP', 'add_frontend_js' ) );
+		add_filter( 'image_send_to_editor', array( 'AxisWP', 'add_data_attribute' ), 10, 7 );
 	}
 
 	// Client-side (frontend) stuff
@@ -204,38 +205,113 @@ class AxisWP {
 	/**
 	 * AJAX callback that inserts chart as attachment into the WP database
 	 */
-	public static function insert_axis_attachment() {
+	public static function insert_axis_attachment_callback() {
 		// Get config
-		$axis_config = json_decode( $_POST['axisConfig'] );
+		$axis_config = json_decode( stripslashes( $_POST['axisConfig'] ), true );
+
+		// This check might also need a nonce
+		if ( ! current_user_can( 'upload_files' )
+			|| ! current_user_can( 'edit_post', $_POST['parentID'] )
+			|| ( isset( $axis_config['attachmentID'] ) && ! current_user_can( 'edit_post', $axis_config['attachmentID'] ) )
+		) {
+			return false;
+		}
 
 		// Begin saving PNG to filesystem
+
+		// The following two conditionals are just permissions checks, really.
 		if ( false === ( $creds = request_filesystem_credentials( 'admin-ajax.php', '', false, false, null ) ) ) {
-			return; // stop processing here
+			return false; // stop processing here
 		}
 		if ( ! WP_Filesystem( $creds ) ) {
 			request_filesystem_credentials( 'admin-ajax.php', '', true, false, null );
-			return;
+			return false;
 		}
+
+		// Convert data URI to filesystem PNG
 		global $wp_filesystem;
 		$upload_dir = wp_upload_dir();
-		$chart_filename = sanitize_title_with_dashes( $axis_config->chartTitle ) . '_' . time() . '.png';
+		$chart_filename = sanitize_title_with_dashes( $axis_config['chartTitle'] ) . '_' . time() . '.png';
 		$filename = trailingslashit( $upload_dir['path'] ) . $chart_filename;
 		$uriPhp = 'data://' . substr( $_POST['axisChart'], 5 ); // Via http://stackoverflow.com/questions/6735414/php-data-uri-to-file/6735458#6735458
-		$binary = wpcom_vip_file_get_contents( $uriPhp );
+
+		if ( function_exists( 'wpcom_vip_file_get_contents' ) ) {
+			$binary = wpcom_vip_file_get_contents( $uriPhp ); // This might not work like I think it will. Cannot test it...
+		} else {
+			$binary = file_get_contents( $uriPhp ); //wpcom_vip_file_get_contents() doesn't exist in normal WP? Bizarre.
+		}
+
+		// Write it to filesystem
 		$wp_filesystem->put_contents(
 			$filename,
 			$binary,
 			FS_CHMOD_FILE // predefined mode settings for WP files
 		);
 
-		// Insert or update attachment.
-		if ( ! $axis_config->ID ) {
+		if ( ! isset($axis_config['attachmentID']) ) { // Insert new attachment
 			$attachment = array(
-				'post_title' => $axis_config->chartTitle,
+				'guid' => $upload_dir['url'] . '/' . basename( $filename ),
+				'post_title' => $axis_config['chartTitle'],
 				'post_content' => '', // Must be empty string
 				'post_status' => 'published',
 				'post_mime_type' => 'image/png',
+				'post_status' => 'inherit',
 			);
+
+			$attach_id = wp_insert_attachment( $attachment, $filename, $_POST['parentID'] );
+
+			// Make sure that this file is included, as wp_generate_attachment_metadata() depends on it.
+			require_once( ABSPATH . 'wp-admin/includes/image.php' );
+
+			// Generate the metadata for the attachment, and update the database record.
+			$attach_data = wp_generate_attachment_metadata( $attach_id, $filename );
+			wp_update_attachment_metadata( $attach_id, $attach_data );
+			$axis_config['attachmentID'] = $attach_id;
+			$attach_url = wp_get_attachment_image_src( $attach_id, 'full' );
+			$axis_config['attachmentURL'] = $attach_url[0];
+			update_post_meta( $attach_id, '_axisWP', json_encode( $axis_config ) ); // Update attachment custom field
+			echo json_encode( $axis_config ); // Return config to axisJS
+			die();
+		} else { // Update existing attachment
+			update_attached_file( $axis_config['attachmentID'], $filename ); // Update filename to new version
+			$attach_url = wp_get_attachment_image_src( $axis_config['attachmentID'], 'full' ); // Get full path
+			$attach_data = wp_generate_attachment_metadata( $axis_config['attachmentID'], $filename );
+			wp_update_attachment_metadata( $axis_config['attachmentID'], $attach_data );
+			$axis_config['attachmentURL'] = $attach_url[0];
+			update_post_meta( $axis_config['attachmentID'], '_axisWP', json_encode( $axis_config ) );
+
+			// Update title (and possibly other metadata) separately
+			$updates = array(
+				'ID' => $axis_config['attachmentID'],
+				'post_title' => (isset($axis_config['chartTitle']) ? $axis_config['chartTitle'] : null),
+			);
+			wp_update_post( $updates );
+
+			echo json_encode( $axis_config ); // Return config back to axisJS
+			die();
+		}
+	}
+
+	/**
+	 * Filter the image HTML markup to send to the editor.
+	 *
+	 * @since 2.5.0
+	 *
+	 * @param string $html    The image HTML markup to send.
+	 * @param int    $id      The attachment id.
+	 * @param string $caption The image caption.
+	 * @param string $title   The image title.
+	 * @param string $align   The image alignment.
+	 * @param string $url     The image source URL.
+	 * @param string $size    The image size.
+	 * @param string $alt     The image alternative, or alt, text.
+	 */
+	public static function add_data_attribute( $html, $id, $alt, $title, $align, $url, $size ) {
+		$axisJS_config = get_post_meta( $id, '_axisWP', true );
+		if ( ! empty( $axisJS_config ) ) {
+			return '<div class="mceNonEditable"><img src="' . $url . '" data-axisjs=\'' . base64_encode( $axisJS_config ) . '\' class="mceItem axisChart" /></div><br />';
+		} else {
+			return $html;
 		}
 	}
 
@@ -271,9 +347,19 @@ class AxisWP {
 	public static function add_admin_stylesheet() {
 		wp_enqueue_style( 'axisWP', plugins_url( 'css/axis.css', __file__ ), array( 'dashicons' ), '1.0' );
 
-		$params = array(
-			'axisJSPath' => plugins_url( 'bower_components/axisjs/dist/index.html', __file__ ),
-		);
+		if ( WP_DEBUG ) {
+			$params = array(
+				'axisJSPath' => plugins_url( 'bower_components/axisjs/app/index.html', __file__ ),
+			);
+		} else {
+			$params = array(
+				'axisJSPath' => plugins_url( 'bower_components/axisjs/dist/index.html', __file__ ),
+			);
+		}
+		global $post;
+		if ( isset($post->ID) ){
+			$params['parentID'] = $post->ID;
+		}
 		wp_localize_script( 'jquery', 'axisWP', $params ); // Hooking to jQuery just 'cause.
 	}
 
