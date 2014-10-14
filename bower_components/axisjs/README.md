@@ -1,5 +1,5 @@
-# axisJS
-## version 0.1.2
+# axisJS [![Build Status](https://travis-ci.org/times/axisJS.svg?branch=master)](https://travis-ci.org/times/axisJS)
+## version 0.2.0
 ### 2014 [Ændrew Rininsland](http://www.github.com/aendrew) for [The Times and Sunday Times](http://www.github.com/times)
 
 axisJS is a light [Angular](http://angularjs.org)-based app for generating charts. It combines with
@@ -53,7 +53,7 @@ View API docs online [here](http://times.github.io/axisJS/docs/).
 
 1. Abstract chart configuration into a provider so that `app/scripts/directives/buildchart.js`
 and `app/scripts/directives/exportchart.js` aren't so tightly bound to C3
-2. **ALL** the unit tests
+2. ~~**ALL** the unit tests~~
 3. Documentation and cleanup of `buildchart.js` and `exportchart.js`
 4. Abstract each output format into factories so more can be modularly added
 5. Abstract out vendor functionality — i.e., make the colour picker replaceable

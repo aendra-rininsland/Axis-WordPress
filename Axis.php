@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: Axis
-Version: 0.1.2
+Version: 1.0.0
 Description: Plugin for adding charts to WordPress posts
 Author: Ændrew Rininsland
 Author URI: http://www.aendrew.com
@@ -36,7 +36,6 @@ class AxisWP {
 		add_filter( 'tiny_mce_before_init', array( 'AxisWP', 'tinymce_options' ) );
 		add_filter( 'mce_external_plugins', array( 'AxisWP', 'register_tinymce_javascript' ) );
 		add_action( 'admin_enqueue_scripts', array( 'AxisWP', 'add_admin_stylesheet' ) );
-		add_action( 'init' , array( 'AxisWP', 'register_chart_taxonomy' ) );
 		add_filter( 'attachment_fields_to_edit', array( 'AxisWP', 'add_chart_metadata_field' ), null, 2 );
 		add_filter( 'attachment_fields_to_save', array( 'AxisWP', 'save_chart_metadata' ), null, 2 );
 		add_action( 'wp_ajax_insert_axis_attachment', array( 'AxisWP', 'insert_axis_attachment_callback' ) );
@@ -121,47 +120,6 @@ class AxisWP {
 
 
 	// Admin-side backend stuff
-
-	/**
-	 * Registers the charts taxonomy.
-	 *
-	 * @return null
-	 */
-	public static function register_chart_taxonomy() {
-		$labels = array(
-			'name'              => 'Charts',
-			'singular_name'     => 'Chart',
-			'search_items'      => 'Search Charts',
-			'all_items'         => 'All Chart Categories',
-			'parent_item'       => 'Parent Chart Category',
-			'parent_item_colon' => 'Parent Chart Category:',
-			'edit_item'         => 'Edit Chart Category',
-			'update_item'       => 'Update Chart Category',
-			'add_new_item'      => 'Add New Chart Category',
-			'new_item_name'     => 'New Chart Category Name',
-			'menu_name'         => 'Charts',
-		);
-
-		$args = array(
-			'labels' => $labels,
-			'hierarchical' => true,
-			'query_var' => 'true',
-			'rewrite' => 'true',
-			'show_admin_column' => 'true',
-		);
-
-		register_taxonomy( 'chart', 'attachment', $args );
-		if ( ! term_exists( 'default', 'chart' ) ) {
-			wp_insert_term(
-				'(default)', // the term
-				'chart', // the taxonomy
-				array(
-					'description' => 'Unsorted Axis charts',
-					'slug' => 'default',
-				)
-			);
-		}
-	}
 
 	/**
 	 * Adding custom field to the $form_fields array

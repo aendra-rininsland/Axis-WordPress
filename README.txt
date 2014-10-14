@@ -2,8 +2,8 @@
 Contributors: aendrew
 Tags: charts, graphs, data
 Requires at least: 3.0.1
-Tested up to: 3.4
-Stable tag: 0.1.2
+Tested up to: 4.0
+Stable tag: 1.0.0
 License: MIT
 License URI: http://opensource.org/licenses/MIT
 
@@ -40,6 +40,9 @@ as is the interface layout.
 == Screenshots ==
 
 == Changelog ==
+
+= 1.0.0 =
+* First stable release. Adds Media Library functionality.
 
 = 0.1.2 =
 * Bugfix release. Adds grouped charts.
