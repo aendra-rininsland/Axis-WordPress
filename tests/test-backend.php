@@ -19,7 +19,6 @@ class AxisBackendTest extends WP_UnitTestCase {
 	 * @covers AxisWP::add_data_attribute
 	 */
 
-
 	/**
 	 * @covers AxisWP::register_buttons
 	 * @nb apply_filters() is only returning Axis' buttons. Not sure why. Test may be broken.

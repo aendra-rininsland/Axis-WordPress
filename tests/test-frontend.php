@@ -3,6 +3,9 @@
  * Tests the frontend functionality
  */
 class AxisFrontendTest extends WP_UnitTestCase {
+
+	// Code coverage tests
+
 	/**
 	 * @covers AxisWP::convert_png_to_interactive
 	 * @todo update to not use PNGs.
@@ -38,6 +41,28 @@ class AxisFrontendTest extends WP_UnitTestCase {
 	}
 
 	// Tests to prevent regressive bugs
+
+	/**
+	 * Ensure Axis outputs existing charts properly to frontend
+	 * @see https://github.com/times/Axis/issues/11
+	 */
+
+	/**
+	 * Ensure Axis can create a series chart
+	 * @see https://github.com/times/Axis/issues/10
+	 */
+
+	/**
+	 * Ensure Axis can create a pie chart
+	 */
+
+	/**
+	 * Ensure Axis can create a donut chart
+   */
+
+	/**
+	 * Ensure Axis can create a gauge chart
+	 */
 
 	/**
 	 * Ensure AxisWP::convert_png_to_interactive() doesn't inject additional doctype declarations
