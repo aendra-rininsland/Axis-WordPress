@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: Axis
-Version: 1.0.0
+Version: 1.0.1
 Description: Plugin for adding charts to WordPress posts
 Author: Ændrew Rininsland
 Author URI: http://www.aendrew.com

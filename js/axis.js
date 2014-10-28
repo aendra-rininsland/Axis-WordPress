@@ -1,9 +1,8 @@
-/*global c3*/
 /**
  *  Axis for WordPress — Frontend Code
  *  This renders the data-uri-based images from the backend as interactive charts.
  */
-
+/*global c3*/
 (function($){
 	function makeId(){
 		var text = '';
