@@ -227,7 +227,7 @@ class AxisWP {
 			$axis_config['attachmentID'] = $attach_id;
 			$attach_url = wp_get_attachment_image_src( $attach_id, 'full' );
 			$axis_config['attachmentURL'] = $attach_url[0];
-			update_post_meta( $attach_id, '_axisWP', json_encode( $axis_config ) ); // Update attachment custom field
+			update_post_meta( $attach_id, '_axisWP', addslashes( json_encode( $axis_config ) ) ); // Update attachment custom field
 			echo json_encode( $axis_config ); // Return config to axisJS
 			die();
 		} else { // Update existing attachment
