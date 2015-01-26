@@ -165,8 +165,7 @@ class AxisWP {
 	 */
 	public static function insert_axis_attachment_callback() {
 		// Get config
-		$axis_config = json_decode( stripslashes( $_POST['axisConfig'] ), true );
-
+		$axis_config = json_decode( stripslashes( file_get_contents( 'php://input' ) ), true );
 		// This check might also need a nonce
 		if ( ! current_user_can( 'upload_files' )
 			|| ! current_user_can( 'edit_post', $_POST['parentID'] )

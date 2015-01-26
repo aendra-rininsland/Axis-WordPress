@@ -1,9 +1,9 @@
 {
   "name": "axisJS",
   "description": "Modular, Angular-based framework for creating basic charts",
-  "version": "0.2.1",
+  "version": "1.0.1",
   "main": [
-    "app/scripts/app.js"
+    "dist/scripts/scripts.js"
   ],
   "license": "MIT",
   "ignore": [
@@ -14,7 +14,8 @@
     ".jshintrc",
     ".travis.yml",
     ".gitignore",
-    "bower_components/"
+    "bower_components/",
+    "docs/"
   ],
   "keywords": [
     "charts",
@@ -34,6 +35,8 @@
   },
   "dependencies": {},
   "devDependencies": {
+    "angular-ui-router": "~0.2.13",
+    "angular-bootstrap": "~0.12.0",
     "js-yaml": "~3.2.2",
     "angular": "~1.3",
     "json3": "~3.3.1",
@@ -41,23 +44,31 @@
     "bootstrap-sass-official": "~3.2.0",
     "angular-resource": "~1.3",
     "angular-sanitize": "~1.3",
-    "angular-animate": "~1.3",
+    "angular-animate": "~1.3.8",
     "angular-ui": "~0.4.0",
-    "c3": "6bebdb24c386d3c282ee8ef387fb6dd99b49abb3",
+    "c3": "~0.4.9",
     "Papa-Parse": "mholt/PapaParse#346d4aeb5675195d6ed3fecd2e4aa5e0983c3cb3",
     "bootstrap-colorselector": "*",
     "canvg": "~1.3.0",
     "angular-mocks": "~1.3",
-    "angular-scenario": "~1.3"
+    "angular-scenario": "~1.3",
+    "angular-minicolors": "~0.0.5",
+    "angular-off-canvas": "~0.1.0",
+    "jsonfn": "vkiryukhin/jsonfn",
+    "jspdf": "~1.0.272"
   },
   "appPath": "app",
-  "_release": "0.2.1",
+  "resolutions": {
+    "angular": "~1.3.8",
+    "d3": "<=3.5.0"
+  },
+  "_release": "1.0.1",
   "_resolution": {
     "type": "version",
-    "tag": "0.2.1",
-    "commit": "51b5cc72f6163097360ea2e75da02f7480454c74"
+    "tag": "1.0.1",
+    "commit": "27c79b611b2a0e7dd08a388dcbf446844f5eed5a"
   },
   "_source": "git://github.com/times/axisJS.git",
-  "_target": "~0.2.1",
+  "_target": "~1.0.1",
   "_originalSource": "axisjs"
 }

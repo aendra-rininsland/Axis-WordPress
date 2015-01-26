@@ -3,7 +3,7 @@ Contributors: aendrew
 Tags: charts, graphs, data
 Requires at least: 3.0.1
 Tested up to: 4.0
-Stable tag: 1.0.1
+Stable tag: 1.0.2
 License: MIT
 License URI: http://opensource.org/licenses/MIT
 
@@ -41,17 +41,26 @@ as is the interface layout.
 
 == Changelog ==
 
-= 1.0.1 =
-* Bugfix release. Fixes reusable charts (#11), bar charts (#10)
+= 1.0.2 =
+* Feature release
+* Updates AxisJS to 1.0.0
 
 = 1.0.1 =
-* First stable release. Adds Media Library functionality (#4).
+* Bugfix release
+* Fixes reusable charts (#11)
+* Fixes bar charts (#10)
+
+= 1.0.1 =
+* First stable release
+* Adds Media Library functionality (#4)
 
 = 0.1.2 =
-* Bugfix release. Adds grouped charts (times/axisJS#7).
+* Bugfix release
+* Adds grouped charts (times/axisJS#7)
 
 = 0.1.1 =
-* Bugfix release. Adds interactive charts to frontend (#2).
+* Bugfix release
+* Adds interactive charts to frontend (#2)
 
 = 0.1.0 =
-* Initial release.
+* Initial release
