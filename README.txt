@@ -3,7 +3,7 @@ Contributors: aendrew
 Tags: charts, graphs, data
 Requires at least: 3.0.1
 Tested up to: 4.0
-Stable tag: 1.0.2
+Stable tag: 1.0.3
 License: MIT
 License URI: http://opensource.org/licenses/MIT
 
@@ -40,6 +40,12 @@ as is the interface layout.
 == Screenshots ==
 
 == Changelog ==
+
+= 1.0.3 =
+* Bugfix release
+* Updates AxisJS to 1.0.2
+* Fixes issue with deliciousbrains/wp-amazon-s3-and-cloudfront
+* Replaces existing assets on save instead of creating new ones. Save diskspace!
 
 = 1.0.2 =
 * Feature release

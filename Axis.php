@@ -1,7 +1,8 @@
 <?php
+require_once('FirePHPCore/fb.php');
 /*
 Plugin Name: Axis
-Version: 1.0.2
+Version: 1.0.3
 Description: Plugin for adding charts to WordPress posts
 Author: Ændrew Rininsland
 Author URI: http://www.aendrew.com
@@ -164,8 +165,10 @@ class AxisWP {
 	 * AJAX callback that inserts chart as attachment into the WP database
 	 */
 	public static function insert_axis_attachment_callback() {
+
 		// Get config
-		$axis_config = json_decode( stripslashes( file_get_contents( 'php://input' ) ), true );
+		$axis_config = json_decode( stripslashes( $_POST['axisConfig'] ), true );
+
 		// This check might also need a nonce
 		if ( ! current_user_can( 'upload_files' )
 			|| ! current_user_can( 'edit_post', $_POST['parentID'] )
@@ -188,7 +191,12 @@ class AxisWP {
 		// Convert data URI to filesystem PNG
 		global $wp_filesystem;
 		$upload_dir = wp_upload_dir();
-		$chart_filename = sanitize_title_with_dashes( $axis_config['chartTitle'] ) . '_' . time() . '.png';
+		if ( ! isset( $axis_config['attachmentID'] ) ){
+			$chart_filename = sanitize_title_with_dashes( $axis_config['chartTitle'] ) . '_' . time() . '.png';
+		} else {
+			$chart_filename = basename( wp_get_attachment_url( $axis_config['attachmentID'], true ) );
+		}
+
 		$filename = trailingslashit( $upload_dir['path'] ) . $chart_filename;
 		$uriPhp = 'data://' . substr( $_POST['axisChart'], 5 ); // Via http://stackoverflow.com/questions/6735414/php-data-uri-to-file/6735458#6735458
 
@@ -229,12 +237,15 @@ class AxisWP {
 			update_post_meta( $attach_id, '_axisWP', addslashes( json_encode( $axis_config ) ) ); // Update attachment custom field
 			echo json_encode( $axis_config ); // Return config to axisJS
 			die();
+
 		} else { // Update existing attachment
-			update_attached_file( $axis_config['attachmentID'], $filename ); // Update filename to new version
-			$attach_url = wp_get_attachment_image_src( $axis_config['attachmentID'], 'full' ); // Get full path
 			$attach_data = wp_generate_attachment_metadata( $axis_config['attachmentID'], $filename );
 			wp_update_attachment_metadata( $axis_config['attachmentID'], $attach_data );
-			$axis_config['attachmentURL'] = $attach_url[0];
+
+			$attach_url = wp_get_attachment_url( $axis_config['attachmentID'], true ); // Get full path
+
+			$axis_config['attachmentURL'] = $attach_url;
+
 			update_post_meta( $axis_config['attachmentID'], '_axisWP', json_encode( $axis_config ) );
 
 			// Update title (and possibly other metadata) separately

@@ -1,6 +1,6 @@
 {
   "name": "Axis for WordPress",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "authors": [
     "Ændrew Rininsland <aendrew.rininsland@the-times.co.uk>"
   ],
@@ -13,7 +13,7 @@
     "tests"
   ],
   "dependencies": {
-    "axisjs": "~1.0.1",
+    "axisjs": "~1.0.2",
     "c3": "~0.4.9"
   }
 }
