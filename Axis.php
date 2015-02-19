@@ -1,5 +1,4 @@
 <?php
-require_once('FirePHPCore/fb.php');
 /*
 Plugin Name: Axis
 Version: 1.0.3
