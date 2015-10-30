@@ -24,8 +24,11 @@ class AxisBackendTest extends WP_UnitTestCase {
 	 * @nb apply_filters() is only returning Axis' buttons. Not sure why. Test may be broken.
 	 */
 	function test_register_buttons() {
-		// Arrange
+		//Arange
+		$axisWP = new AxisWP;
+
 		// Act
+		$axisWP->register_buttons(array());
 		$buttons = apply_filters( 'mce_buttons', array() );
 
 		// Assert
@@ -37,7 +40,10 @@ class AxisBackendTest extends WP_UnitTestCase {
 	 */
 	function test_register_tinymce_javascript() {
 		// Arrange
+		$axisWP = new AxisWP;
+
 		// Act
+		$axisWP->register_tinymce_javascript(array());
 		$plugins = apply_filters( 'mce_external_plugins', array() );
 
 		// Assert
@@ -63,7 +69,10 @@ class AxisBackendTest extends WP_UnitTestCase {
 	 */
 	function test_tinymce_options() {
 		// Arrange
+		$axisWP = new AxisWP;
+
 		// Act
+		$axisWP->tinymce_options(array());
 		$options = apply_filters( 'tiny_mce_before_init', array() );
 
 		// Assert
@@ -98,8 +107,10 @@ class AxisBackendTest extends WP_UnitTestCase {
 		global $wp_version;
 		$exploded_version = explode('.', $wp_version);
 		$major_version = $exploded_version[0];
+		$axisWP = new AxisWP;
 
 		// Act
+		$axisWP->register_tinymce_javascript(array());
 		$plugins = apply_filters( 'mce_external_plugins', array() );
 		$tinymce_plugin = $plugins['Axis'];
 
@@ -114,6 +125,10 @@ class AxisBackendTest extends WP_UnitTestCase {
 
 	public function setUp() {
 			parent::setUp();
+
+			$user_id = $this->factory->user->create( array( 'role' => 'administrator' ) );
+			$user = wp_set_current_user( $user_id );
+			set_current_screen( 'edit-post' );
 	}
 
 	public function tearDown() {

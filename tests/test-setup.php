@@ -22,9 +22,8 @@ class AxisSetupTest extends WP_UnitTestCase {
 	 */
 	function test_constructor() {
 		// Arrange
-		// Act
+		$axisWP = new AxisWP;
 
-		// Assert
 		// Admin
 		$this->assertInternalType('integer', has_filter( 'mce_buttons', array( 'AxisWP', 'register_buttons' ) ) );
 		$this->assertInternalType('integer', has_filter( 'kses_allowed_protocols', array( 'AxisWP', 'allow_data_protocol' ) ) );
@@ -57,6 +56,10 @@ class AxisSetupTest extends WP_UnitTestCase {
 
 	public function setUp() {
 			parent::setUp();
+
+			$user_id = $this->factory->user->create( array( 'role' => 'administrator' ) );
+			$user = wp_set_current_user( $user_id );
+			set_current_screen( 'edit-post' );
 	}
 
 	public function tearDown() {

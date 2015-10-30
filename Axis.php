@@ -32,7 +32,6 @@ class AxisWP {
 		// Backend stuff
 		if ( is_admin() ) {
 			add_filter( 'mce_buttons', array( 'AxisWP', 'register_buttons' ) );
-			add_filter( 'kses_allowed_protocols', array( 'AxisWP', 'allow_data_protocol' ) );
 			add_filter( 'tiny_mce_before_init', array( 'AxisWP', 'tinymce_options' ) );
 			add_filter( 'mce_external_plugins', array( 'AxisWP', 'register_tinymce_javascript' ) );
 			add_action( 'admin_enqueue_scripts', array( 'AxisWP', 'add_admin_stylesheet' ) );
@@ -43,6 +42,7 @@ class AxisWP {
 		}
 
 		// Frontend stuff
+		add_filter( 'kses_allowed_protocols', array( 'AxisWP', 'allow_data_protocol' ) );
 		add_filter( 'the_content', array( 'AxisWP', 'convert_png_to_interactive' ) );
 		add_action( 'wp_enqueue_scripts', array( 'AxisWP', 'add_frontend_js' ) );
 		add_filter( 'image_send_to_editor', array( 'AxisWP', 'add_data_attribute' ), 10, 7 );
@@ -72,7 +72,7 @@ class AxisWP {
 		$xpath = new DOMXPath( $doc );
 		$charts = $xpath->query( "//*[contains(@class, 'axisChart')]" );
 
-		foreach ( $charts as $chart ){
+		foreach ( $charts as $chart ) {
 			$chartConfig = $chart->getAttribute( 'data-axisjs' );
 			$div = $doc->createElement( 'div' );
 			$div->setAttribute( 'data-axisjs', $chartConfig );
@@ -392,16 +392,19 @@ class AxisWP {
 	}
 
 	public static function on_uninstall() {
-			if ( ! current_user_can(  'activate_plugins' ) )
-					return;
-			check_admin_referer( 'bulk-plugins' );
+		if ( ! current_user_can( 'activate_plugins' ) ) {
+				return;
+		}
 
-			// Important: Check if the file is the one
-			// that was registered during the uninstall hook.
-			if (  __FILE__ != WP_UNINSTALL_PLUGIN  )
-					return;
+		check_admin_referer( 'bulk-plugins' );
 
-			# Uncomment the following line to see the function in action
-			# exit(  var_dump(  $_GET  )  );
+		// Important: Check if the file is the one
+		// that was registered during the uninstall hook.
+		if (  __FILE__ != WP_UNINSTALL_PLUGIN  ) {
+			return;
+		}
+
+		# Uncomment the following line to see the function in action
+		# exit(  var_dump(  $_GET  )  );
 	}
 }
