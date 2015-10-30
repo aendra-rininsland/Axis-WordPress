@@ -3,7 +3,7 @@ Contributors: aendrew
 Tags: charts, graphs, data
 Requires at least: 3.0.1
 Tested up to: 4.0
-Stable tag: 1.0.3
+Stable tag: 1.0.4
 License: MIT
 License URI: http://opensource.org/licenses/MIT
 
@@ -40,6 +40,12 @@ as is the interface layout.
 == Screenshots ==
 
 == Changelog ==
+
+= 1.0.4 =
+* Bugfix and feature release
+* Updates AxisJS to 1.1.0
+* Fixes closing window issue
+* Makes stuff actually usable again. :+1:
 
 = 1.0.3 =
 * Bugfix release
