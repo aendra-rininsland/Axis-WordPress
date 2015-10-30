@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<ruleset name="RedBox">
+  <description>Custom Red Box ruleset</description>
+
+  <exclude-pattern>*/tests/*</exclude-pattern>
+  <exclude-pattern>*/vendor/*</exclude-pattern>
+  <exclude-pattern>*/bin/*</exclude-pattern>
+
+  <rule ref="WordPress-Extra">
+    <!-- Yeah, we've gone way too far down the camelCase rabbit hole. -->
+    <exclude name="WordPress.NamingConventions.ValidFunctionName.FunctionNameInvalid" />
+
+    <!-- This is just dumb. "OH YES I NEED TO ESCAPE TEMPLATE OUTPUT". -->
+    <exclude name="WordPress.XSS.EscapeOutput.OutputNotEscaped" />
+  </rule>
+</ruleset>

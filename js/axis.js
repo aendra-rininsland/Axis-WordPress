@@ -30,4 +30,7 @@
 		window.chart = c3.generate(config);
 	});
 
+	// Set local storage to override the default config with WP one.
+	localStorage.setItem('ls.defaultConfig', 'themes/wordpress.config.yaml');
+
 })(jQuery);

@@ -30,15 +30,17 @@ class AxisWP {
 
 	public function __construct() {
 		// Backend stuff
-		// @TODO This probably needs an is_admin()...
-		add_filter( 'mce_buttons', array( 'AxisWP', 'register_buttons' ) );
-		add_filter( 'kses_allowed_protocols', array( 'AxisWP', 'allow_data_protocol' ) );
-		add_filter( 'tiny_mce_before_init', array( 'AxisWP', 'tinymce_options' ) );
-		add_filter( 'mce_external_plugins', array( 'AxisWP', 'register_tinymce_javascript' ) );
-		add_action( 'admin_enqueue_scripts', array( 'AxisWP', 'add_admin_stylesheet' ) );
-		add_filter( 'attachment_fields_to_edit', array( 'AxisWP', 'add_chart_metadata_field' ), null, 2 );
-		add_filter( 'attachment_fields_to_save', array( 'AxisWP', 'save_chart_metadata' ), null, 2 );
-		add_action( 'wp_ajax_insert_axis_attachment', array( 'AxisWP', 'insert_axis_attachment_callback' ) );
+		if ( is_admin() ) {
+			add_filter( 'mce_buttons', array( 'AxisWP', 'register_buttons' ) );
+			add_filter( 'kses_allowed_protocols', array( 'AxisWP', 'allow_data_protocol' ) );
+			add_filter( 'tiny_mce_before_init', array( 'AxisWP', 'tinymce_options' ) );
+			add_filter( 'mce_external_plugins', array( 'AxisWP', 'register_tinymce_javascript' ) );
+			add_action( 'admin_enqueue_scripts', array( 'AxisWP', 'add_admin_stylesheet' ) );
+			add_filter( 'attachment_fields_to_edit', array( 'AxisWP', 'add_chart_metadata_field' ), null, 2 );
+			add_filter( 'attachment_fields_to_save', array( 'AxisWP', 'save_chart_metadata' ), null, 2 );
+			add_action( 'wp_ajax_insert_axis_attachment', array( 'AxisWP', 'insert_axis_attachment_callback' ) );
+			add_action( 'admin_enqueue_scripts', array( 'AxisWP', 'add_frontend_js' ) );
+		}
 
 		// Frontend stuff
 		add_filter( 'the_content', array( 'AxisWP', 'convert_png_to_interactive' ) );
@@ -110,12 +112,10 @@ class AxisWP {
 	 */
 
 	public static function add_frontend_js() {
-		if ( ! is_admin() ) {
-			wp_enqueue_script( 'd3js', plugins_url( 'bower_components/d3/d3.min.js', __file__ ), array( 'jquery' ), '3.4.11', true );
-			wp_enqueue_script( 'c3js', plugins_url( 'bower_components/c3/c3.min.js', __file__ ), array( 'jquery', 'd3js' ), '0.3.0', true );
-			wp_enqueue_script( 'axis', plugins_url( 'js/axis.js', __file__ ), array( 'jquery', 'c3js', 'd3js' ), '0.1.0', true );
-			wp_enqueue_style( 'c3jsCSS', plugins_url( 'bower_components/c3/c3.css', __file__ ) );
-		}
+		wp_enqueue_script( 'd3js', plugins_url( 'bower_components/d3/d3.min.js', __file__ ), array( 'jquery' ), '3.4.11', true );
+		wp_enqueue_script( 'c3js', plugins_url( 'bower_components/c3/c3.min.js', __file__ ), array( 'jquery', 'd3js' ), '0.3.0', true );
+		wp_enqueue_style( 'c3jsCSS', plugins_url( 'bower_components/c3/c3.css', __file__ ) );
+		wp_enqueue_script( 'axis', plugins_url( 'js/axis.js', __file__ ), array( 'jquery', 'c3js', 'd3js' ), '0.1.0', true );
 	}
 
 
@@ -190,8 +190,9 @@ class AxisWP {
 		// Convert data URI to filesystem PNG
 		global $wp_filesystem;
 		$upload_dir = wp_upload_dir();
-		if ( ! isset( $axis_config['attachmentID'] ) ){
-			$chart_filename = sanitize_title_with_dashes( $axis_config['chartTitle'] ) . '_' . time() . '.png';
+		if ( ! isset( $axis_config['attachmentID'] ) ) {
+			$chartTitle = isset( $axis_config['chartTitle'] ) ? $axis_config['chartTitle'] : 'axisChart';
+			$chart_filename = sanitize_title_with_dashes( $chartTitle ) . '_' . time() . '.png';
 		} else {
 			$chart_filename = basename( wp_get_attachment_url( $axis_config['attachmentID'], true ) );
 		}
@@ -215,7 +216,7 @@ class AxisWP {
 		if ( ! isset($axis_config['attachmentID']) ) { // Insert new attachment
 			$attachment = array(
 				'guid' => $upload_dir['url'] . '/' . basename( $filename ),
-				'post_title' => $axis_config['chartTitle'],
+				'post_title' => isset( $axis_config['chartTitle'] ) ? $axis_config['chartTitle'] : 'Axis Chart',
 				'post_content' => '', // Must be empty string
 				'post_status' => 'published',
 				'post_mime_type' => 'image/png',
@@ -314,15 +315,10 @@ class AxisWP {
 	public static function add_admin_stylesheet() {
 		wp_enqueue_style( 'axisWP', plugins_url( 'css/axis.css', __file__ ), array( 'dashicons' ), '1.0' );
 
-		if ( WP_DEBUG ) {
-			$params = array(
-				'axisJSPath' => plugins_url( 'bower_components/axisjs/app/index.html', __file__ ),
-			);
-		} else {
-			$params = array(
-				'axisJSPath' => plugins_url( 'bower_components/axisjs/dist/index.html', __file__ ),
-			);
-		}
+		$params = array(
+			'axisJSPath' => plugins_url( 'bower_components/axisjs/dist/index.html', __file__ ),
+		);
+
 		global $post;
 		if ( isset($post->ID) ){
 			$params['parentID'] = $post->ID;
@@ -371,7 +367,7 @@ class AxisWP {
 	}
 
 	public static function on_activation() {
-		if ( ! current_user_can(  'activate_plugins' ) ) {
+		if ( ! current_user_can( 'activate_plugins' ) ) {
 			return;
 		}
 
@@ -389,7 +385,7 @@ class AxisWP {
 		}
 		$plugin_req = $_REQUEST['plugin'];
 		$plugin = isset( $plugin_req  ) ? $plugin_req : '';
-		check_admin_referer(  "deactivate-plugin_{$plugin}"  );
+		check_admin_referer( "deactivate-plugin_{$plugin}" );
 
 		# Uncomment the following line to see the function in action
 		# exit(  var_dump(  $_GET  )  );

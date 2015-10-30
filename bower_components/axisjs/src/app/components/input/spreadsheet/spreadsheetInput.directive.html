@@ -1,0 +1,12 @@
+<hot-table
+  name="hot-table-instance"
+  hot-id="spreadsheet-input"
+  row-headers="true"
+  col-headers="true"
+  datarows="sheet.inputs.inputData"
+  min-spare-rows="27"
+  min-spare-cols="10"
+  height="200"
+  on-before-change="sheet.clearOnPaste"
+  on-after-change="main.updateData">
+</hot-table>

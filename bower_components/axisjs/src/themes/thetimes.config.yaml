@@ -1,0 +1,94 @@
+# The Times axisJS configuration
+---
+renderer: 'c3'
+
+export:
+  - 'Embed code'
+  - 'pdf'
+
+output:
+  - 'png'
+  - 'svg'
+
+colors:
+  - label: 'Appointments'
+    value: '#A8C6D6'
+  - label: 'Business'
+    value: '#0076A3'
+  - label: 'Culture'
+    value: '#C2DBE8'
+  - label: 'Comment'
+    value: '#6398B0'
+  - label: 'Driving'
+    value: '#F58220'
+  - label: 'Focus'
+    value: '#DA2128'
+  - label: 'Home'
+    value: '#00A88E'
+  - label: 'Money'
+    value: '#00ACCD'
+  - label: 'News'
+    value: '#286FB7'
+  - label: 'News Review'
+    value: '#0083CA'
+  - label: 'Sport'
+    value: '#39B54A'
+  - label: 'Sport Dark Blue'
+    value: '#2B4C5A'
+  - label: 'Sunday'
+    value: '#005B7F'
+  - label: 'Travel'
+    value: '#00AEEF'
+
+background colors:
+  - label: 'normal'
+    value: '#F3F2E5'
+  - label: 'tempus'
+    value: '#E4EEEF'
+  - label: 'white'
+    value: '#ffffff'
+  - label: 'black'
+    value: '#000000'
+
+backgroundColor: '#F3F2E5'
+background: true
+
+stylesheet: 'themes/thetimes.css'
+
+screen margins: # in pixels
+  top: '12px'
+  bottom: '12px'
+  left: '12px'
+  right: '12px'
+
+print margins: # in points
+  top: '5'
+  bottom: '5'
+  left: '5'
+  right: '5'
+
+defaults:
+  grid x: true
+  grid y: true
+  axis y: false
+  axis y2: true
+  axis x: true
+  legend show: false
+  legend position: 'bottom'
+  point: false
+  y axis: 'y2'
+  series type: 'area'
+  padding left: 50
+  padding right: 50
+  padding top: 100
+  padding bottom: 10
+
+fonts:
+  - 'http://www.thetimes.co.uk/fonts/TimesClassicText-Bold-Italic.css'
+  - 'http://www.thetimes.co.uk/fonts/TimesClassicText-Medium.css'
+  - 'http://www.thetimes.co.uk/fonts/StagSans-SemiBold.css'
+  - 'http://www.thetimes.co.uk/fonts/StagSans-Medium.css'
+  - 'http://www.thetimes.co.uk/fonts/StagSans-Book.css'
+
+
+colorPicker: 'simple'

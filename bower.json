@@ -13,7 +13,11 @@
     "tests"
   ],
   "dependencies": {
-    "axisjs": "~1.0.2",
-    "c3": "~0.4.9"
+    "c3": "aendrew/c3#title_options",
+    "axisjs": "1.1.0",
+    "d3": "~3.5.6"
+  },
+  "resolutions": {
+    "d3": "<=3.5.0"
   }
 }
