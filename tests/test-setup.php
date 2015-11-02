@@ -49,7 +49,7 @@ class AxisSetupTest extends WP_UnitTestCase {
 	function test_on_deactivation() {}
 
 	/**
-	 * @covers AxisWP:on_uninstall
+	 * @covers AxisWP::on_uninstall
 	 * @TODO Write uninstall unit test.
 	 */
 	function test_on_uninstall() {}
