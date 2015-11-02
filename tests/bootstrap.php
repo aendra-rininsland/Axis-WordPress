@@ -10,9 +10,13 @@ if ( ! $_tests_dir ) {
 
 require_once $_tests_dir . '/includes/functions.php';
 
+/**
+ * @codeCoverageIgnore
+ */
 function _manually_load_plugin() {
 	require dirname( __FILE__ ) . '/../Axis.php';
 }
+
 tests_add_filter( 'muplugins_loaded', '_manually_load_plugin' );
 
 require $_tests_dir . '/includes/bootstrap.php';
